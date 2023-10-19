@@ -1,0 +1,48 @@
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Library/
+Build/
+Recordings/
+Logs/shadercompiler*
+Logs/AssetImportWorker*
+UserSettings/Layouts/
+
+# ============================================================================ #
+# MonoDevelop / Visual Studio / Visual Studio Code / JetBrains Rider generated #
+# ============================================================================ #
+.vscode/
+.vs/
+.idea/
+obj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+Thumbs.db
+
+# =============== #
+# CMD		  #
+# =============== #
+CMD/Logs/
+
+xcode/
+remote_config_data
+
+Assets/Plugins/FMOD/Cache/
+fmod_editor.log
+
