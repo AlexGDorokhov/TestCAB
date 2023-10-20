@@ -1,11 +1,12 @@
-﻿using Defines.Enums;
+﻿using Controllers.Interfaces;
+using Defines.Enums;
 using Events.Input;
 using Scripts;
 using UnityEngine;
 
 namespace Controllers.Input
 {
-    public class MouseInputController : BaseController
+    public class MouseInputController : BaseController, IControllerWithUpdate
     {
 
         private bool _isMouseDown = false;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Controllers;
+using Controllers.Interfaces;
 using Events;
 using Utils;
 
@@ -13,32 +14,29 @@ namespace Services
         private static IDictionary<Type, IBaseController> _registeredForUpdates = new Dictionary<Type, IBaseController>();
         private static IDictionary<Type, IBaseController> _registeredForFixedUpdate = new Dictionary<Type, IBaseController>();
 
-        public static T Bind<T>(bool registerForUpdate = false, bool registerForFixedUpdate = false) where T : IBaseController
+        public static void Bind<T>() where T : IBaseController
         {
             if (!_controllers.ContainsKey(typeof(T)))
             {
-                Log.Message("ControllersService: Created and bound new controller " + typeof(T).ToString());
                 var newController = Activator.CreateInstance<T>();
+                Log.Message("ControllersService: Created and bound new controller " + typeof(T).ToString());
                 var controllerType = typeof(T);
                 _controllers.Add(controllerType, newController);
-                if (registerForUpdate)
+                if (newController is IControllerWithUpdate)
                 {
                     _registeredForUpdates.Add(controllerType, newController);
                 }
-                if (registerForFixedUpdate)
+                if (newController is IControllerWithFixedUpdate)
                 {
                     _registeredForFixedUpdate.Add(controllerType, newController);
                 }
                 newController.Init();
                 newController.AddEventsHandlers();
-                return newController;
             }
             else
             {
                 Log.Error("ControllersService: Controller can't be bound to ControllersService more thane one time", true);
             }
-
-            return default(T);
         }
 
         public static void Unbind<T>() where T : IBaseController

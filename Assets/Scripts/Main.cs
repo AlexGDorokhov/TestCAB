@@ -36,14 +36,14 @@ namespace Scripts
         private void InitControllers()
         {
             ControllersService.Bind<GameController>();
-            ControllersService.Bind<MouseInputController>(true);
+            ControllersService.Bind<MouseInputController>();
         }
 
         private void InitUi()
         {
             ControllersService.Bind<EnvironmentMediator>();
             ControllersService.Bind<FruitsMediator>();
-            ControllersService.Bind<EnemiesMediator>(true);
+            ControllersService.Bind<EnemiesMediator>();
             ControllersService.Bind<TargetMediator>();
             ControllersService.Bind<HeroMediator>();
             ControllersService.Bind<UiMediator>();

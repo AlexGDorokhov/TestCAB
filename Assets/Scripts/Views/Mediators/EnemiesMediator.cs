@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Controllers;
+using Controllers.Interfaces;
 using Events;
 using Scripts;
 using Services;
@@ -8,7 +9,7 @@ using Views.Behaviours;
 
 namespace Views.Mediators
 {
-    public class EnemiesMediator: BaseMediator<EnemiesBehaviour>
+    public class EnemiesMediator: BaseMediator<EnemiesBehaviour>, IControllerWithUpdate
     {
         
         private List<EnemyBehaviour> _enemies;
