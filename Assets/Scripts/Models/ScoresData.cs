@@ -21,5 +21,10 @@ namespace Models
             }
             _scores.Add(score);
         }
+
+        public int GetCount()
+        {
+            return _scores.Count;
+        }
     }
 }

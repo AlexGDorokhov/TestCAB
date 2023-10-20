@@ -27,6 +27,13 @@ namespace Controllers
 
             var dataPath = Path.Combine(DirectoryNames.Data, "ScoresData");
             _scores = Resources.Load<ScoresData>(dataPath);
+
+            var savedScoresCount = PlayerPrefs.GetInt(PlayerPrefsKeys.ScoresCount);
+            for (int i = 0; i < savedScoresCount; i++)
+            {
+                var score = PlayerPrefs.GetInt(string.Concat(PlayerPrefsKeys.ScoresPrefix, i));
+                _scores.AddScore(score);
+            }
             
             _gameSettings = new GameSettingsModel().Clone();
             GameState = GameStates.Undefined;
@@ -195,7 +202,11 @@ namespace Controllers
         
         private void ShowGameOver()
         {
+            var count = _scores.GetCount();
+            PlayerPrefs.SetInt(PlayerPrefsKeys.ScoresCount, count + 1);
+            PlayerPrefs.SetInt(string.Concat(PlayerPrefsKeys.ScoresPrefix, count), PlayerPoints);
             _scores.AddScore(PlayerPoints);
+            
             HideAllPrefabs();
             ControllersService.Get<GameOverMediator>().Show();
             GameState = GameStates.IsFinished;
