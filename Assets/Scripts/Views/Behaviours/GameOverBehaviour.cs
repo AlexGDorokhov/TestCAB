@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MyBox;
@@ -58,14 +59,12 @@ namespace Views.Behaviours
                 }
             }
 
-            Rebuild(currentResultIndex);
-
-            
+            StartCoroutine(Rebuild(currentResultIndex));
         }
         
-        private async void Rebuild(int currentResultIndex)
+        private IEnumerator Rebuild(int currentResultIndex)
         {
-            await Task.Delay(TimeSpan.FromSeconds(0.1f));
+            yield return new WaitForSeconds(0.1f);
             LayoutRebuilder.ForceRebuildLayoutImmediate(_gridLayoutGroup.GetComponent<RectTransform>());
             MoveToCurrent(currentResultIndex);
         }

@@ -35,6 +35,7 @@ namespace Scripts
 
         private void InitControllers()
         {
+            ControllersService.Bind<SavesController>();
             ControllersService.Bind<GameController>();
             ControllersService.Bind<MouseInputController>();
         }

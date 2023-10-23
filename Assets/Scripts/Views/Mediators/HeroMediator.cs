@@ -1,4 +1,5 @@
-﻿using Controllers;
+﻿using System.Collections.Generic;
+using Controllers;
 using Events;
 using Events.Input;
 using Scripts;
@@ -29,6 +30,8 @@ namespace Views.Mediators
                 {
                     new CollisionWithEnemyEvent() { GameObject =  go } .Fire();
                 }
+
+                new CollidedObjectsEvent() { ObjectNames = new List<string> { Behaviour.gameObject.name, go.name } } .Fire();
             };
         }
 

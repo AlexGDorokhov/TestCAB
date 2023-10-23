@@ -9,6 +9,7 @@ using Models;
 using Services;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using Views.Mediators;
 
 namespace Controllers
@@ -18,31 +19,25 @@ namespace Controllers
 
         private GameSettingsModel _gameSettings; 
         private PlayerModel _player;
-        private ScoresData _scores;
         public static GameStates GameState;
+        
+        private UnityEvent _gameOverEvent = new UnityEvent();
 
         public override void Init()
         {
             base.Init();
 
-            var dataPath = Path.Combine(DirectoryNames.Data, "ScoresData");
-            _scores = Resources.Load<ScoresData>(dataPath);
-
-            var savedScoresCount = PlayerPrefs.GetInt(PlayerPrefsKeys.ScoresCount);
-            for (int i = 0; i < savedScoresCount; i++)
-            {
-                var score = PlayerPrefs.GetInt(string.Concat(PlayerPrefsKeys.ScoresPrefix, i));
-                _scores.AddScore(score);
-            }
-            
             _gameSettings = new GameSettingsModel().Clone();
             GameState = GameStates.Undefined;
+            
         }
         
         public override void AddEventsHandlers()
         {
             base.AddEventsHandlers();
-            
+
+            _gameOverEvent.AddListener(ShowGameOver);
+
             AddListener<ChangeGameStateEvent>(ChangeGameState);
             AddListener<ChangeGameSettingsEvent>(ChangeGameSettings);
             AddListener<CollisionWithEnemyEvent>(CollisionWithEnemy);
@@ -53,6 +48,8 @@ namespace Controllers
         public override void RemoveEventsHandlers()
         {
             
+            _gameOverEvent.RemoveListener(ShowGameOver);
+
             RemoveListener<ChangeGameStateEvent>();
             RemoveListener<ChangeGameSettingsEvent>();
             RemoveListener<CollisionWithEnemyEvent>();
@@ -110,7 +107,7 @@ namespace Controllers
                 _player.Lives = value;
                 if (value < 1)
                 {
-                    ShowGameOver();
+                    _gameOverEvent?.Invoke();
                 }
             }
         }
@@ -202,21 +199,12 @@ namespace Controllers
         
         private void ShowGameOver()
         {
-            var count = _scores.GetCount();
-            PlayerPrefs.SetInt(PlayerPrefsKeys.ScoresCount, count + 1);
-            PlayerPrefs.SetInt(string.Concat(PlayerPrefsKeys.ScoresPrefix, count), PlayerPoints);
-            _scores.AddScore(PlayerPoints);
+            new SaveScoreEvent() { Points = PlayerPoints } .Fire(); 
             
             HideAllPrefabs();
             ControllersService.Get<GameOverMediator>().Show();
             GameState = GameStates.IsFinished;
         }
-
-        public List<int> GetScores()
-        {
-            return _scores.GetScores();
-        }
-
 
     }
 }

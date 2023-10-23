@@ -1,4 +1,6 @@
-﻿using Events.Input;
+﻿using System.Linq;
+using Events;
+using Events.Input;
 using Views.Behaviours;
 
 namespace Views.Mediators
@@ -28,12 +30,16 @@ namespace Views.Mediators
             base.AddEventsHandlers();
             
             AddListener<InputEvent>(MouseInput);
+            AddListener<CollidedObjectsEvent>(CollidedObjects);
+            AddListener<MouseRaycastHitEvent>(LastMouseRaycastHit);
         }
 
         public override void RemoveEventsHandlers()
         {
             
             RemoveListener<InputEvent>();
+            RemoveListener<CollidedObjectsEvent>();
+            RemoveListener<MouseRaycastHitEvent>();
             
             base.RemoveEventsHandlers();
         }
@@ -44,6 +50,16 @@ namespace Views.Mediators
             var x = e.Position.x > 0 ? e.Position.x.ToString() : "-"; 
             var y = e.Position.y > 0 ? e.Position.y.ToString() : "-"; 
             Behaviour.SetTouchPosition(x, y);
+        }
+
+        private void CollidedObjects(CollidedObjectsEvent e)
+        {
+            Behaviour.SetLastCollided(string.Join(",", e.ObjectNames));
+        }
+
+        private void LastMouseRaycastHit(MouseRaycastHitEvent e)
+        {
+            Behaviour.SetLastMouseRaycast(e.ObjectName);
         }
 
 

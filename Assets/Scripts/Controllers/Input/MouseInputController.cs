@@ -1,8 +1,10 @@
 ﻿using Controllers.Interfaces;
 using Defines.Enums;
+using Events;
 using Events.Input;
 using Scripts;
 using UnityEngine;
+using Utils;
 
 namespace Controllers.Input
 {
@@ -11,7 +13,16 @@ namespace Controllers.Input
 
         private bool _isMouseDown = false;
         private Vector3 _oldPosition;
+        
+        private Camera _camera;
+
+        public override void Init()
+        {
+            base.Init();
             
+            _camera = Camera.main;
+        }
+
         public override void Update()
         {
 
@@ -19,7 +30,7 @@ namespace Controllers.Input
             {
                 return;
             }
-            
+
             var mouseLeftClickDown = UnityEngine.Input.GetMouseButtonDown(0);
             var mouseLeftClick = UnityEngine.Input.GetMouseButton(0);
             var mouseLeftClickUp = UnityEngine.Input.GetMouseButtonUp(0);
@@ -37,6 +48,13 @@ namespace Controllers.Input
                     }
                     _oldPosition = UnityEngine.Input.mousePosition;
                     _isMouseDown = true;
+                    
+                    var hit = Physics2D.Raycast(UnityEngine.Input.mousePosition, Vector2.left);
+                    if (hit)
+                    {
+                        new MouseRaycastHitEvent() { ObjectName = hit.transform.gameObject.name } .Fire();
+                    }
+
                     new InputEvent() { Position = UnityEngine.Input.mousePosition }.Fire();
                 }
             }

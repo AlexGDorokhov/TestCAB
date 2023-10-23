@@ -53,8 +53,9 @@ namespace Views.Mediators
 
         public override void Show()
         {
+            var savesController = ControllersService.Get<SavesController>();
+            var scores = savesController.GetScores();
             var gameController = ControllersService.Get<GameController>();
-            var scores = gameController.GetScores();
             var currentPoints = gameController.PlayerPoints;
             
             scores.Sort();
@@ -62,9 +63,9 @@ namespace Views.Mediators
 
             var currentPosition = scores.IndexOf(currentPoints);
 
-            Behaviour.CreateGrid(scores, currentPosition);
-            
             base.Show();
+
+            Behaviour.CreateGrid(scores, currentPosition);
         }
     }
 }
