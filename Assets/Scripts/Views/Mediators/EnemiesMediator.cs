@@ -5,6 +5,7 @@ using Events;
 using Scripts;
 using Services;
 using UnityEngine;
+using UnityEngine.Pool;
 using Views.Behaviours;
 
 namespace Views.Mediators
@@ -15,10 +16,21 @@ namespace Views.Mediators
         private List<EnemyBehaviour> _enemies;
         private float _speed;
 
+        private ObjectPool<EnemyBehaviour> _pool;
+
         protected override void OnRegister()
         {
 
             base.OnRegister();
+            
+            var gameController = ControllersService.Get<GameController>();
+            
+            _pool = new ObjectPool<EnemyBehaviour>(
+                createFunc: () => Behaviour.SpawnEnemy(), 
+                actionOnGet: (obj) => obj.gameObject.SetActive(true), 
+                actionOnRelease: (obj) => obj.gameObject.SetActive(false), 
+                actionOnDestroy: Object.Destroy, 
+                defaultCapacity: gameController.EnemiesCount);
 
             _enemies = new List<EnemyBehaviour>();
 
@@ -28,6 +40,7 @@ namespace Views.Mediators
         {
 
             _enemies = null;
+            _pool = null;
             
             base.OnRemove();
 
@@ -120,7 +133,8 @@ namespace Views.Mediators
                     break;
             }
             
-            var enemy = Behaviour.SpawnEnemy(position.x, position.y);
+            var enemy = _pool.Get();
+            enemy.gameObject.transform.position = new Vector3(position.x, position.y, 0);
             enemy.MoveToPoint = GetNewRandomMoveToPoint();
             _enemies.Add(enemy);
         }

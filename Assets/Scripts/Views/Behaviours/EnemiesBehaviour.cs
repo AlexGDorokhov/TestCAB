@@ -12,11 +12,9 @@ namespace Views.Behaviours
             return _enemy.GetComponent<RectTransform>();
         }
         
-        public EnemyBehaviour SpawnEnemy(float x, float y)
+        public EnemyBehaviour SpawnEnemy()
         {
-            var enemy = Instantiate(_enemy, transform);
-            enemy.gameObject.transform.position = new Vector3(x, y, 0);
-            return enemy;
+            return Instantiate(_enemy, transform);
         }
 
 

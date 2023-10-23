@@ -11,10 +11,9 @@ namespace Views.Behaviours
             return _fruit.GetComponent<RectTransform>();
         }
         
-        public FruitBehaviour SpawnFruit(float x, float y)
+        public FruitBehaviour SpawnFruit()
         {
             var fruit = Instantiate(_fruit, transform);
-            fruit.gameObject.transform.position = new Vector3(x, y, 0);
             return fruit;
         }
     }

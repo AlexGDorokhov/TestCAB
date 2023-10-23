@@ -4,6 +4,7 @@ using Events;
 using Scripts;
 using Services;
 using UnityEngine;
+using UnityEngine.Pool;
 using Views.Behaviours;
 
 namespace Views.Mediators
@@ -13,10 +14,21 @@ namespace Views.Mediators
 
         private List<FruitBehaviour> _fruits;
         
+        private ObjectPool<FruitBehaviour> _pool;
+        
         protected override void OnRegister()
         {
 
             base.OnRegister();
+
+            var gameController = ControllersService.Get<GameController>();
+
+            _pool = new ObjectPool<FruitBehaviour>(
+                createFunc: () => Behaviour.SpawnFruit(), 
+                actionOnGet: (obj) => obj.gameObject.SetActive(true), 
+                actionOnRelease: (obj) => obj.gameObject.SetActive(false), 
+                actionOnDestroy: Object.Destroy, 
+                defaultCapacity: gameController.EnemiesCount);
 
             _fruits = new List<FruitBehaviour>();
 
@@ -25,6 +37,7 @@ namespace Views.Mediators
         protected override void OnRemove()
         {
 
+            _pool = null;
             _fruits = null;
             
             base.OnRemove();
@@ -103,7 +116,9 @@ namespace Views.Mediators
 
                 if (isPointEmpty)
                 {
-                    _fruits.Add(Behaviour.SpawnFruit(randX, randY));
+                    var fruit = _pool.Get();
+                    fruit.gameObject.transform.position = new Vector3(randX, randY, 0);
+                    _fruits.Add(fruit);
                     return;
                 }
             }
