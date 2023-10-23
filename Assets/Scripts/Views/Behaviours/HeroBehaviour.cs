@@ -4,6 +4,7 @@ using MyBox;
 using Services.Attributes;
 using Services.Injected;
 using UnityEngine;
+using UnityEngine.UI;
 using Utils;
 
 namespace Views.Behaviours
@@ -17,6 +18,19 @@ namespace Views.Behaviours
         private float _speed = 2f;
 
         [InjectService] private ISoundService _soundService;
+
+        [SerializeField] private Texture TextureForHero;
+
+        protected override void Start()
+        {
+            base.Start();
+            
+            var newMaterial = new Material(Shader.Find("UI/Default"));
+            newMaterial.mainTexture = TextureForHero;
+            newMaterial.SetColor("_Color", "#00FF34".ToUnityColor()); 
+            GetComponent<Image>().material = newMaterial;
+            
+        }
 
         private void Update()
         {
