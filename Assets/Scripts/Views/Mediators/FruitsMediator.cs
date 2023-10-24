@@ -27,10 +27,20 @@ namespace Views.Mediators
                 createFunc: () => Behaviour.SpawnFruit(), 
                 actionOnGet: (obj) => obj.gameObject.SetActive(true), 
                 actionOnRelease: (obj) => obj.gameObject.SetActive(false), 
-                actionOnDestroy: Object.Destroy, 
+                actionOnDestroy: (obj) =>
+                {
+                    obj.FadeoutEndAction = null;
+                    Object.Destroy(obj);
+                }, 
                 defaultCapacity: gameController.EnemiesCount);
 
             _fruits = new List<FruitBehaviour>();
+
+            Behaviour.FruitFadeoutEndAction = (fruitBehaviour) =>
+            {
+                ClearFruit(fruitBehaviour);
+                SpawnFruit();
+            };
 
         }
 
@@ -39,6 +49,8 @@ namespace Views.Mediators
 
             _pool = null;
             _fruits = null;
+
+            Behaviour.FruitFadeoutEndAction = null;
             
             base.OnRemove();
 
@@ -139,6 +151,7 @@ namespace Views.Mediators
         private void ClearFruit(FruitBehaviour fruit)
         {
             _fruits.Remove(fruit);
+            fruit.FadeoutEndAction = null;
             Object.Destroy(fruit.gameObject);
         }
         
