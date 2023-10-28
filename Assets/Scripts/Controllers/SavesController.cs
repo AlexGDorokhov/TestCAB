@@ -15,14 +15,14 @@ namespace Controllers
     public class SavesController : BaseController
     {
         
-        private ScoresData _scores = new ScoresData();
+        private ScoresData _scores = ScriptableObject.CreateInstance(typeof(ScoresData)) as ScoresData;
         private string jsonFilePath = Path.Combine(Application.persistentDataPath, "ScoresData.json");
 
         public override void Init()
         {
 
             base.Init();
-            
+
             switch (ApplicationSettings.Instance.SaveMode)
             {
                 
