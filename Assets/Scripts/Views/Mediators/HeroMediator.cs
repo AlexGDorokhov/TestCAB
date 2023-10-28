@@ -17,8 +17,8 @@ namespace Views.Mediators
 
             base.OnRegister();
 
-            var uiRect = Main.CanvasRectTransform;
-            Behaviour.JumpTo(uiRect.rect.width / 2, uiRect.rect.height / 2);
+            var uiRect = Main.SpaceRect;
+            Behaviour.JumpTo(uiRect.width / 2, uiRect.height / 2);
 
             Behaviour.CollisionAction = (go) =>
             {
@@ -49,12 +49,14 @@ namespace Views.Mediators
             base.AddEventsHandlers();
             
             AddListener<InputEvent>(MouseInput);
+            AddListener<DimensionsChangedEvent>(DimensionsChanged);
         }
 
         public override void RemoveEventsHandlers()
         {
             
             RemoveListener<InputEvent>();
+            RemoveListener<DimensionsChangedEvent>();
             
             base.RemoveEventsHandlers();
         }
@@ -81,11 +83,37 @@ namespace Views.Mediators
                 Behaviour.MoveTo(e.Position.x, e.Position.y);
             }
         }
+        
+        private void DimensionsChanged(DimensionsChangedEvent e)
+        {
+            var needToJump = false;
+            var pos = Behaviour.transform.position;
+            var rect = Behaviour.GetComponent<RectTransform>();
+            if (pos.x > Main.SpaceRect.width)
+            {
+                pos.x = Main.SpaceRect.width - rect.rect.width;
+                needToJump = true;
+            }
+
+            if (pos.y > Main.SpaceRect.height)
+            {
+                pos.y = Main.SpaceRect.height - rect.rect.height;
+                needToJump = true;
+            }
+
+            if (needToJump)
+            {
+                Behaviour.JumpTo(pos.x, pos.y);
+            }
+            
+            var gameController = ControllersService.Get<GameController>();
+            Behaviour.SetSpeed(gameController.FullMoveSpeed);
+        }
 
         public override void Show()
         {
             var gameController = ControllersService.Get<GameController>();
-            Behaviour.SetSpeed(gameController.MoveSpeed);
+            Behaviour.SetSpeed(gameController.FullMoveSpeed);
             
             base.Show();
         }

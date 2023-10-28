@@ -35,13 +35,14 @@ namespace Controllers.Input
             var mouseLeftClick = UnityEngine.Input.GetMouseButton(0);
             var mouseLeftClickUp = UnityEngine.Input.GetMouseButtonUp(0);
 
+
             if (UnityEngine.Input.mousePosition.x > 0
-                && UnityEngine.Input.mousePosition.x < Main.CanvasRectTransform.rect.width
+                && UnityEngine.Input.mousePosition.x < Main.SpaceRect.width
                 && UnityEngine.Input.mousePosition.y > 0
-                && UnityEngine.Input.mousePosition.x < Main.CanvasRectTransform.rect.height)
+                && UnityEngine.Input.mousePosition.y < Main.SpaceRect.height)
             {
                 if (mouseLeftClick)
-                { 
+                {
                     if (_oldPosition == UnityEngine.Input.mousePosition)
                     {
                         return;

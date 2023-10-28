@@ -19,6 +19,9 @@ namespace Views.Behaviours
         [SerializeField] private Button _newGameButton;
         [SerializeField] private Button _exitButton;
 
+        private RectTransform _gridLayoutGroupRectTransform;
+        private RectTransform _gridLayoutGroupParentRectTransform;
+
         public void AddListeners()
         {
             _newGameButton.onClick.AddListener(OnNewGameButtonClick);
@@ -31,6 +34,19 @@ namespace Views.Behaviours
             _newGameButton.onClick.RemoveListener(OnNewGameButtonClick);
             _exitButton.onClick.RemoveListener(OnExitButtonClick);
             
+        }
+
+        private void Awake()
+        {
+            _gridLayoutGroupRectTransform = _gridLayoutGroup.GetComponent<RectTransform>();
+            _gridLayoutGroupParentRectTransform = _gridLayoutGroup.transform.parent.GetComponent<RectTransform>();
+        }
+
+        private void Update()
+        {
+            var pRect = _gridLayoutGroupParentRectTransform.rect;
+            _gridLayoutGroupRectTransform.SetWidth(pRect.width);
+            _gridLayoutGroup.cellSize = new Vector2(pRect.width, _gridLayoutGroup.cellSize.y);
         }
 
         private void OnNewGameButtonClick()

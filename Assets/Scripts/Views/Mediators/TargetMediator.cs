@@ -1,4 +1,5 @@
-﻿using Events.Input;
+﻿using Events;
+using Events.Input;
 using Views.Behaviours;
 
 namespace Views.Mediators
@@ -28,17 +29,24 @@ namespace Views.Mediators
             base.AddEventsHandlers();
             
             AddListener<InputEvent>(MouseInput);
+            AddListener<DimensionsChangedEvent>(DimensionsChanged);
         }
 
         public override void RemoveEventsHandlers()
         {
             
             RemoveListener<InputEvent>();
+            RemoveListener<DimensionsChangedEvent>();
             
             base.RemoveEventsHandlers();
         }
 
-        
+        private void DimensionsChanged(DimensionsChangedEvent obj)
+        {
+            Behaviour.JumpTo(-100 , -100);
+        }
+
+
         private void MouseInput(InputEvent e)
         {
             if (!Behaviour.gameObject.activeSelf)

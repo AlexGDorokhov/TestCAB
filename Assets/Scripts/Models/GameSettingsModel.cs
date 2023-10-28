@@ -2,18 +2,15 @@
 {
     public class GameSettingsModel
     {
-        
         public float MoveSpeed;
+        public float MoveSpeedMultiplayer;
         public int EnemiesCount;
         public int FruitsCount;
 
         public GameSettingsModel()
         {
-#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR             
-            MoveSpeed = 20f;
-#else
-            MoveSpeed = 2f;
-#endif            
+            MoveSpeed = 3f;
+            MoveSpeedMultiplayer = 1f;
             EnemiesCount = 2;
             FruitsCount = 2;
         }
@@ -23,6 +20,7 @@
             return new GameSettingsModel()
             {
                 MoveSpeed = MoveSpeed,
+                MoveSpeedMultiplayer = MoveSpeedMultiplayer,
                 EnemiesCount = EnemiesCount,
                 FruitsCount = FruitsCount
             };

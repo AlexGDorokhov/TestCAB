@@ -64,7 +64,11 @@ namespace Views.Behaviours
         
         public void JumpTo(float x, float y)
         {
-            transform.position = new Vector3(x, y, 0);
+            _toPoint = Vector3.zero;
+            var rect = GetComponent<RectTransform>(); 
+            rect.SetPositionX(x);
+            rect.SetPositionY(y);
+            //transform.position = new Vector3(x, y, 0);
         }
 
 

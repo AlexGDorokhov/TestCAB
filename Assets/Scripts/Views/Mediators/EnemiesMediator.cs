@@ -2,6 +2,7 @@
 using Controllers;
 using Controllers.Interfaces;
 using Events;
+using MyBox;
 using Scripts;
 using Services;
 using UnityEngine;
@@ -51,19 +52,21 @@ namespace Views.Mediators
             base.AddEventsHandlers();
             
             AddListener<CollisionWithEnemyEvent>(CollisionWithEnemy);
+            AddListener<DimensionsChangedEvent>(DimensionsChanged);
         }
 
         public override void RemoveEventsHandlers()
         {
             
             RemoveListener<CollisionWithEnemyEvent>();
+            RemoveListener<DimensionsChangedEvent>();
             
             base.RemoveEventsHandlers();
         }
 
         private void CollisionWithEnemy(CollisionWithEnemyEvent e)
         {
-            ClearFruit(e.GameObject.GetComponent<EnemyBehaviour>());
+            ClearEnemy(e.GameObject.GetComponent<EnemyBehaviour>());
             SpawnEnemy();
         }
 
@@ -72,7 +75,7 @@ namespace Views.Mediators
             ClearEnemies();
 
             var gameController = ControllersService.Get<GameController>();
-            _speed = gameController.MoveSpeed;
+            _speed = gameController.FullMoveSpeed;
             for (int i = 0; i < gameController.EnemiesCount; i++)
             {
                 SpawnEnemy();
@@ -88,6 +91,30 @@ namespace Views.Mediators
             
             base.Hide();
         }
+        
+        private void DimensionsChanged(DimensionsChangedEvent e)
+        {
+
+            for (int i = 0; i < _enemies.Count; i++)
+            {
+                var enemy = _enemies[i];
+                var enemyPosition = enemy.gameObject.transform.position;
+                if (enemyPosition.x > Main.SpaceRect.width || enemyPosition.y > Main.SpaceRect.height)
+                {
+                    ClearEnemy(enemy);
+                    SpawnEnemy();
+                    continue;
+                }
+
+                if (enemy.MoveToPoint.x > Main.SpaceRect.width || enemy.MoveToPoint.y > Main.SpaceRect.height)
+                {
+                    enemy.MoveToPoint = GetNewRandomMoveToPoint();
+                }
+            }
+
+            var gameController = ControllersService.Get<GameController>();
+            _speed = gameController.FullMoveSpeed;
+        }
 
         private Vector3 GetNewRandomMoveToPoint()
         {
@@ -97,8 +124,8 @@ namespace Views.Mediators
             var fHeight = fRectTransform.rect.height;
             var minX = fWidth / 2;
             var minY = fHeight / 2;
-            var maxX = Main.CanvasRectTransform.rect.width - minX;
-            var maxY = Main.CanvasRectTransform.rect.height - minY;
+            var maxX = Main.SpaceRect.width - minX;
+            var maxY = Main.SpaceRect.height - minY;
             var randX = Random.Range(minX, maxX);
             var randY = Random.Range(minY, maxY);
 
@@ -112,8 +139,8 @@ namespace Views.Mediators
             var fHeight = fRectTransform.rect.height;
             var minX = fWidth / 2;
             var minY = fHeight / 2;
-            var maxX = Main.CanvasRectTransform.rect.width - minX;
-            var maxY = Main.CanvasRectTransform.rect.height - minY;
+            var maxX = Main.SpaceRect.width - minX;
+            var maxY = Main.SpaceRect.height - minY;
 
             var position = Vector2.zero;
             var rnd = Random.Range(1, 4);
@@ -134,7 +161,9 @@ namespace Views.Mediators
             }
             
             var enemy = _pool.Get();
-            enemy.gameObject.transform.position = new Vector3(position.x, position.y, 0);
+            var rect = enemy.GetComponent<RectTransform>();
+            rect.SetPositionX(position.x);
+            rect.SetPositionY(position.y);
             enemy.MoveToPoint = GetNewRandomMoveToPoint();
             _enemies.Add(enemy);
         }
@@ -149,7 +178,7 @@ namespace Views.Mediators
             _enemies = new List<EnemyBehaviour>();
         }
         
-        private void ClearFruit(EnemyBehaviour enemy)
+        private void ClearEnemy(EnemyBehaviour enemy)
         {
             _enemies.Remove(enemy);
             Object.Destroy(enemy.gameObject);

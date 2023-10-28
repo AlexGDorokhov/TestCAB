@@ -61,12 +61,14 @@ namespace Views.Mediators
             base.AddEventsHandlers();
             
             AddListener<CollisionWithFruitEvent>(CollisionWithFruit);
+            AddListener<DimensionsChangedEvent>(DimensionsChanged);
         }
 
         public override void RemoveEventsHandlers()
         {
             
             RemoveListener<CollisionWithFruitEvent>();
+            RemoveListener<DimensionsChangedEvent>();
             
             base.RemoveEventsHandlers();
         }
@@ -100,6 +102,21 @@ namespace Views.Mediators
             base.Hide();
         }
 
+        private void DimensionsChanged(DimensionsChangedEvent e)
+        {
+
+            for (int i = 0; i < _fruits.Count; i++)
+            {
+                var fruitPosition = _fruits[i].gameObject.transform.position;
+                if (fruitPosition.x > Main.SpaceRect.width || fruitPosition.y > Main.SpaceRect.height)
+                {
+                    ClearFruit(_fruits[i]);
+                    SpawnFruit();
+                }
+            }
+        }
+
+
         private void SpawnFruit()
         {
             var fRectTransform = Behaviour.GetFruitRectTransform();
@@ -107,8 +124,8 @@ namespace Views.Mediators
             var fHeight = fRectTransform.rect.height;
             var minX = fWidth / 2;
             var minY = fHeight / 2;
-            var maxX = Main.CanvasRectTransform.rect.width - minX;
-            var maxY = Main.CanvasRectTransform.rect.height - minY;
+            var maxX = Main.SpaceRect.width - minX;
+            var maxY = Main.SpaceRect.height - minY;
 
             while (true)
             {

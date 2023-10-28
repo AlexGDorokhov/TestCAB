@@ -6,10 +6,12 @@ using Defines.Constants;
 using Defines.Enums;
 using Events;
 using Models;
+using Scripts;
 using Services;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using Utils;
 using Views.Mediators;
 
 namespace Controllers
@@ -42,6 +44,7 @@ namespace Controllers
             AddListener<ChangeGameSettingsEvent>(ChangeGameSettings);
             AddListener<CollisionWithEnemyEvent>(CollisionWithEnemy);
             AddListener<CollisionWithFruitEvent>(CollisionWithFruit);
+            AddListener<DimensionsChangedEvent>(DimensionsChanged);
             AddListener<ExitEvent>(Exit);
         }
 
@@ -54,6 +57,7 @@ namespace Controllers
             RemoveListener<ChangeGameSettingsEvent>();
             RemoveListener<CollisionWithEnemyEvent>();
             RemoveListener<CollisionWithFruitEvent>();
+            RemoveListener<DimensionsChangedEvent>();
             RemoveListener<ExitEvent>();
             
             base.RemoveEventsHandlers();
@@ -70,6 +74,21 @@ namespace Controllers
                     value = 1;
                 }
                 _gameSettings.MoveSpeed = value;
+            }
+        }
+
+        public float FullMoveSpeed => _gameSettings.MoveSpeed * _gameSettings.MoveSpeedMultiplayer;
+
+        public float MoveSpeedMultiplayer
+        {
+            get => _gameSettings.MoveSpeedMultiplayer;
+            set
+            {
+                if (value < 0.1f)
+                {
+                    value = 0.1f;
+                }
+                _gameSettings.MoveSpeedMultiplayer = value;
             }
         }
 
@@ -139,6 +158,18 @@ namespace Controllers
             new PlayerChangedEvent() { Player = _player }.Fire();
         }
 
+        private void DimensionsChanged(DimensionsChangedEvent e)
+        {
+            ChangeMoveSpeedMultiplayer();
+        }
+
+        private void ChangeMoveSpeedMultiplayer()
+        {
+            var canvasRect = Main.Canvas.GetComponent<RectTransform>();
+            var moveSpeedMultiplayer = Main.SpaceRect.width > Main.SpaceRect.height ? canvasRect.lossyScale.x : canvasRect.lossyScale.y;
+            MoveSpeedMultiplayer = moveSpeedMultiplayer;
+            Log.Message($"New speed is {FullMoveSpeed}");
+        }
 
         private void ChangeGameState(ChangeGameStateEvent e)
         {
@@ -162,6 +193,7 @@ namespace Controllers
             FruitsCount = e.FruitsCount;
             PlayerLives = e.PlayerLives;
         }
+        
 
         private void HideAllPrefabs()
         {
